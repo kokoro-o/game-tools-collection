@@ -1,13 +1,14 @@
 <script lang="ts">
+  import { base } from "$app/paths";
   import FileSaver from "file-saver";
 
-  import { page } from "$app/state";
+  import { page } from "$app/stores";
   import Dropzone from "$lib/components/Dropzone.svelte";
   import { byteswap } from "$lib/utils/bytes";
 
   const metaTitle = "Byteswap";
   const metaDescription = "Byteswap your binary files. Use a collection of tools to rediscover your favorite games by editing your saves or randomizing gameplay elements.";
-  const metaImage = `${page.url.origin}/img/icon.png`;
+  const metaImage = `${$page.url.origin}${base}/img/icon.png`;
 
   function onFileUploaded(file: File, dataView: DataView): void {
     const buffer = byteswap(dataView).buffer as ArrayBuffer;

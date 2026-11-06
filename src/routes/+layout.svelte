@@ -1,5 +1,9 @@
 <script lang="ts">
+  import { base } from "$app/paths";
   import { onMount } from "svelte";
+
+  import { page } from "$app/stores";
+  import { editorText } from "$lib/utils/editorLocale";
 
   import { isDebug, isDirty } from "$lib/stores";
 
@@ -28,20 +32,20 @@
 <div class="gtc-app">
   <div class="gtc-header">
     <div class="gtc-header-inner">
-      <a class="gtc-header-logo" href="/">Game Tools Collection</a>
+      <a class="gtc-header-logo" href="{base}/">Game Tools Collection</a>
       <div>
         <a href="https://discord.gg/3UJeXtsryS" target="_blank">
-          <img src="/img/discord-mark-white.svg" alt="Discord Logo" />
+          <img src="{base}/img/discord-mark-white.svg" alt="Discord Logo" />
         </a>
         <a
           href="https://github.com/RyudoSynbios/game-tools-collection"
           target="_blank"
         >
-          <img src="/img/github-mark-white.svg" alt="GitHub Logo" />
+          <img src="{base}/img/github-mark-white.svg" alt="GitHub Logo" />
         </a>
-        <a href="/">Home</a>
-        <a href="/faq">FAQ</a>
-        <a href="/about">About</a>
+        <a href="{base}/">{editorText($page.params["gameId"], "Home")}</a>
+        <a href="{base}/faq/">{editorText($page.params["gameId"], "FAQ")}</a>
+        <a href="{base}/about/">{editorText($page.params["gameId"], "About")}</a>
       </div>
     </div>
   </div>

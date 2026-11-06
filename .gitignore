@@ -14,3 +14,33 @@ vite.config.ts.timestamp-*
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Local game text extraction, personal saves, QA exports, and runtime logs
+/.local/
+
+# Personal save files and game packages (existing upstream fixtures stay tracked).
+/qa-input/
+/tests/saves/
+*.sav
+*.srm
+*.sra
+MJSaveData*
+*.edited*
+*.pak
+*.nsp
+*.xci
+*.nacp
+*.uasset
+*.uexp
+*.pem
+*.key
+*.p12
+*.pfx
+*.log
+
+# Local extraction reports and machine-specific QA configurations.
+/src/lib/templates/octopath-traveler-ii/saveEditor/data/*.report.json
+/scripts/tests/*.playwright.config.mjs
+/scripts/tests/*integration.test.mjs
+/scripts/tests/*regression.spec.mjs
+/scripts/tests/*stage-a-check.mjs

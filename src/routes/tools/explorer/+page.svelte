@@ -1,7 +1,8 @@
 <script lang="ts">
+  import { base } from "$app/paths";
   import { onDestroy } from "svelte";
 
-  import { page } from "$app/state";
+  import { page } from "$app/stores";
   import EjectIcon from "$lib/assets/Eject.svelte";
   import SaveIcon from "$lib/assets/Save.svelte";
   import Dropzone from "$lib/components/Dropzone.svelte";
@@ -38,7 +39,7 @@
 
   const metaTitle = "Explorer";
   const metaDescription = "Explore the contents of your game memory cards, ISO files and more. Use a collection of tools to rediscover your favorite games by editing your saves or randomizing gameplay elements.";
-  const metaImage = `${page.url.origin}/img/icon.png`;
+  const metaImage = `${$page.url.origin}${base}/img/icon.png`;
 
   let fileTypeEl: HTMLSelectElement;
 

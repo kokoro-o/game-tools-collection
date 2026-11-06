@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onDestroy } from "svelte";
+  import { get } from "svelte/store";
   import type { HTMLInputTypeAttribute } from "svelte/elements";
 
   import { dataJson, dataView, dataViewAlt, isDebug } from "$lib/stores";
@@ -24,6 +26,23 @@
   export let test = false;
   export let onChange: ((event: Event) => void) | undefined = undefined;
   export let onEnter: (() => void) | undefined = undefined;
+  // Opt in only for editors whose filtering can unmount an active quantity field.
+  export let preserveDraft = false;
+  let draft: string | undefined;
+  const initialView = get(dataView);
+
+  function handleChange(event: Event): void {
+    onChange?.(event);
+    draft = undefined;
+  }
+
+  onDestroy(() => {
+    // Discard on eject/new-save; commit a filtered or tabbed-away field through
+    // its existing change handler. Other editors retain the default behavior.
+    if (preserveDraft && draft !== undefined && get(dataView) === initialView && get(dataJson)) {
+      inputEl?.dispatchEvent(new Event("change"));
+    }
+  });
 
   // We export input element to allow prop binding
   export let inputEl: HTMLInputElement | undefined = undefined;
@@ -71,6 +90,7 @@
     if (!hex && (numberType !== "float" || !isDecimalPressed)) {
       target.value = value;
     }
+    if (preserveDraft) draft = target.value;
   }
 
   function handleKeyUp(event: KeyboardEvent): void {
@@ -83,7 +103,7 @@
     ($dataJson, $dataView, $dataViewAlt);
 
     if (inputEl) {
-      inputEl.value = value.toString();
+      inputEl.value = preserveDraft && draft !== undefined ? draft : value.toString();
     }
   }
 </script>
@@ -120,7 +140,7 @@
       data-checksum={checksum}
       data-test={$isDebug && test ? true : null}
       bind:this={inputEl}
-      on:change={onChange}
+      on:change={handleChange}
       on:input={handleInput}
       on:keypress={handleKeyUp}
     />

@@ -13,6 +13,20 @@ import type {
 } from "$lib/types";
 
 import type { BackpackItem } from "./utils/resource";
+import InventoryBrowser from "./components/InventoryBrowser.svelte";
+import EquipmentField from "./components/EquipmentField.svelte";
+import LearnedAbilities from "./components/LearnedAbilities.svelte";
+import CapturedMonsters from "./components/CapturedMonsters.svelte";
+import FollowNpcs from "./components/FollowNpcs.svelte";
+
+// Presentation registration only; the existing save read/write hooks below are unchanged.
+export function getComponent(component: string): typeof InventoryBrowser | typeof EquipmentField | typeof LearnedAbilities | typeof CapturedMonsters | typeof FollowNpcs | undefined {
+  if (component === "InventoryBrowser") return InventoryBrowser;
+  if (component === "EquipmentField") return EquipmentField;
+  if (component === "LearnedAbilities") return LearnedAbilities;
+  if (component === "CapturedMonsters") return CapturedMonsters;
+  if (component === "FollowNpcs") return FollowNpcs;
+}
 
 let gvas: Gvas;
 

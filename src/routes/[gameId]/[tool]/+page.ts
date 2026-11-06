@@ -1,7 +1,8 @@
 import { error, redirect } from "@sveltejs/kit";
+import { base } from "$app/paths";
 
 import { gameTemplate, gameUtils } from "$lib/stores";
-import { getGame, type Tool } from "$lib/utils/db.js";
+import { getGame, getGames, type Tool } from "$lib/utils/db.js";
 import debug from "$lib/utils/debug";
 
 import type { Game } from "$lib/types.js";
@@ -10,13 +11,20 @@ export interface Data {
   game: Game;
 }
 
+// Physical HTML files let GitHub Pages serve direct links and refreshes with 200.
+export function entries() {
+  return getGames().flatMap(game => Object.keys(game.tools)
+    .filter(tool => game.tools[tool as Tool])
+    .map(tool => ({ gameId: game.id, tool: tool.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`) })));
+}
+
 export async function load({ params }): Promise<void> {
   let tool: Tool;
 
   const redirectRoute = getRedirectRoute(params.gameId);
 
   if (redirectRoute) {
-    redirect(301, `/${redirectRoute}/${params.tool}`);
+    redirect(301, `${base}/${redirectRoute}/${params.tool}/`);
   }
 
   if (params.tool === "save-editor") {

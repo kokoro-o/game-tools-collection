@@ -1,4 +1,6 @@
-import type { GameJson, ItemTab } from "$lib/types";
+import type { GameJson, ItemInt, ItemTab } from "$lib/types";
+
+import { localizeTemplate } from "./utils/zh-CN";
 
 import {
   accessories,
@@ -734,6 +736,17 @@ const template: GameJson = {
                           },
                         ],
                       },
+                      ...(index === 0 ? [{
+                        name: "习得技能",
+                        items: [{ type: "component", component: "LearnedAbilities" }],
+                      } as ItemTab] : index === 1 ? [{
+                        name: "捕获魔物",
+                        items: [{ type: "component", component: "CapturedMonsters" }],
+                      } as ItemTab] : []),
+                      ...([1, 3, 4, 7].includes(index) ? [{
+                        name: "随行伙伴",
+                        items: [{ type: "component", component: "FollowNpcs", props: { characterId: index + 1 } }],
+                      } as ItemTab] : []),
                       {
                         name: "Support Skills",
                         flex: true,
@@ -1004,4 +1017,18 @@ const template: GameJson = {
   },
 };
 
-export default template;
+// Keep the original equipment fields (paths, resources and options) inside a
+// presentation wrapper. No save logic or resource definitions are replaced.
+function withDetails(node: unknown): unknown {
+  if (Array.isArray(node)) return node.map(withDetails);
+  if (!node || typeof node !== "object") return node;
+  if ("type" in node && node.type === "variable" && "jsonPath" in node && typeof node.jsonPath === "string" && node.jsonPath.includes(".Equipment.")) {
+    return { type: "component", component: "EquipmentField", props: { item: node as ItemInt } };
+  }
+  if ("name" in node && node.name === "背包" && "items" in node) {
+    return { ...node, items: [{ type: "component", component: "InventoryBrowser" }] };
+  }
+  return Object.fromEntries(Object.entries(node).map(([key, value]) => [key, withDetails(value)]));
+}
+
+export default withDetails(localizeTemplate(template)) as GameJson;

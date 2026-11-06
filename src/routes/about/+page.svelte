@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { page } from "$app/state";
+  import { base } from "$app/paths";
+  import { page } from "$app/stores";
 
   const metaTitle = "About";
-  const metaImage = `${page.url.origin}/img/icon.png`;
+  const metaImage = `${$page.url.origin}${base}/img/icon.png`;
 </script>
 
 <svelte:head>

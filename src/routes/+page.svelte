@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { page } from "$app/state";
+  import { base } from "$app/paths";
+  import { page } from "$app/stores";
   import GameTile from "$lib/components/GameTile.svelte";
   import { getGames, getPlatforms, type Order, type Tool } from "$lib/utils/db";
 
   const metaTitle = "Game Tools Collection: Customize your games!";
   const metaDescription = "Use a collection of tools to rediscover your favorite games by editing your saves or randomizing gameplay elements.";
-  const metaImage = `${page.url.origin}/img/icon.png`;
+  const metaImage = `${$page.url.origin}${base}/img/icon.png`;
 
   let platforms = getPlatforms();
   let games = getGames();
@@ -42,6 +43,12 @@
 </svelte:head>
 
 <div class="gtc-home">
+  <section class="mb-6 rounded-lg bg-primary-900 p-5 text-white">
+    <h1 class="mb-2 text-xl font-bold">《歧路旅人Ⅱ》存档修改器 · 简体中文版</h1>
+    <p class="mb-4">在浏览器中读取和修改存档，保存时下载副本。使用前请备份原存档。</p>
+    <a class="inline-block rounded bg-green-800 px-4 py-2 font-bold" href="{base}/octopath-traveler-ii/save-editor/">打开八方旅人 II 编辑器</a>
+    <p class="mt-3 text-sm">基于 RyudoSynbios 的 Game Tools Collection；下方保留原项目的游戏入口。</p>
+  </section>
   <div class="gtc-home-filters">
     <input
       type="text"

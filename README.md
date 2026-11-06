@@ -1,3 +1,23 @@
+# 《歧路旅人Ⅱ》存档修改器 · 简体中文版
+
+基于 [RyudoSynbios/game-tools-collection](https://github.com/RyudoSynbios/game-tools-collection) 的本地中文版本。保留原作者的 MIT 许可证和存档处理逻辑，针对《歧路旅人Ⅱ》添加简体中文界面与游戏内名称。
+
+- 角色、职业、道具、装备、技能及地名采用游戏 `GameTextZH_CN` 文本，附英文对照。
+- 保存会下载带 `.edited` 后缀的副本；请备份原存档，并在放回游戏目录前按原文件名重命名。
+- macOS：安装 Node.js 24 后，双击 `启动八方旅人2中文版.command`；停止时双击对应停止脚本。
+- 首次启动会安装依赖并构建，需要联网。后续可使用已安装依赖与本地构建启动。
+- 其他系统：运行 `npm ci` 和 `npm run dev -- --host 127.0.0.1`，再访问 `/octopath-traveler-ii/save-editor/`。不需要 `.env` 或后端服务。
+- GitHub Pages 静态发布与首次 Fork / Push 操作：见 [发布到 GitHub Pages](./docs/github-pages.md)。
+- 页面中的存档读取与编辑在浏览器本地完成；成功/失败状态仅写本地控制台，不再发送统计请求。
+
+详见 [中文版使用说明](./中文版使用说明.md)。原作者针对游戏 v1.1.0 设计；编辑器内读取、导出测试通过不等于已经验证游戏内载入。
+
+名称来源与文本键记录在 `zh-CN.sources.json`。游戏文本名称的权利归各自权利人所有，原项目 MIT 许可证不改变这些文本的权属。仓库不包含本地提取的完整游戏文本、游戏包或个人测试存档；上游原有的测试样本按原项目保留。
+
+---
+
+以下为上游项目介绍：
+
 ![Game Tools Collection](https://repository-images.githubusercontent.com/696883921/114d8fd8-3b5e-4fc0-ae88-4c7d4754b73d)
 
 # Game Tools Collection

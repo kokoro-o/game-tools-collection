@@ -1,8 +1,9 @@
 <script lang="ts">
+  import { base } from "$app/paths";
   import FileSaver from "file-saver";
   import { onDestroy } from "svelte";
 
-  import { page } from "$app/state";
+  import { page } from "$app/stores";
   import EjectIcon from "$lib/assets/Eject.svelte";
   import PatchIcon from "$lib/assets/Patch.svelte";
   import SaveIcon from "$lib/assets/Save.svelte";
@@ -28,6 +29,7 @@
   import { updateChecksums } from "$lib/utils/checksum";
   import { formatPlatforms, getGame } from "$lib/utils/db.js";
   import debug from "$lib/utils/debug";
+  import { editorText } from "$lib/utils/editorLocale";
   import { capitalize, setLocalStorage, utilsExists } from "$lib/utils/format";
   import { enrichGameJson } from "$lib/utils/parser";
   import { reset } from "$lib/utils/state";
@@ -41,12 +43,14 @@
 
   import type { Game, GameJson, GameTool, Patch } from "$lib/types";
 
-  const game = getGame(page.params["gameId"]!) as Game;
+  const game = getGame($page.params["gameId"]!) as Game;
+
+  const t = (text: string) => editorText(game.id, text);
 
   let tool = "";
   let toolDetails = {} as GameTool;
 
-  switch (page.params["tool"]) {
+  switch ($page.params["tool"]) {
     case "randomizer":
       tool = "Randomizer";
       toolDetails = game.tools.randomizer!;
@@ -61,9 +65,9 @@
       break;
   }
 
-  const metaTitle = `${game.metaName} - ${formatPlatforms(game.platforms)} - ${tool}`;
+  const metaTitle = `${game.id === "octopath-traveler-ii" ? "歧路旅人Ⅱ · 简体中文版" : game.metaName} - ${formatPlatforms(game.platforms)} - ${t(tool)}`;
   const metaDescription = `A ${tool} for ${game.metaName} on ${formatPlatforms(game.platforms)}.${toolDetails.compatibilities ? ` Compatible with ${toolDetails.compatibilities.join(",")}.` : ""} Use a collection of tools to rediscover your favorite games by editing your saves or randomizing gameplay elements.`;
-  const metaImage = `${page.url.origin}/img/games/${game.id}/logo.png`;
+  const metaImage = `${$page.url.origin}${base}/img/games/${game.id}/logo.png`;
 
   let logoClickCount = 0;
   let logoClickTimer: NodeJS.Timeout;
@@ -90,7 +94,7 @@
   function handleFileEject(): void {
     if ($isDirty) {
       const confirmation = confirm(
-        "You have unsaved changes, are you sure you want to eject your file?",
+        t("You have unsaved changes, are you sure you want to eject your file?"),
       );
 
       if (!confirmation) {
@@ -116,7 +120,7 @@
       type: "application/octet-stream",
     });
 
-    FileSaver.saveAs(blob, $fileName);
+    FileSaver.saveAs(blob, game.id === "octopath-traveler-ii" ? `${$fileName}.edited` : $fileName);
 
     $isDirty = false;
   }
@@ -256,10 +260,7 @@
     error = $gameTemplate.validator.error;
 
     if (!$isDebug) {
-      fetch(`${page.url.pathname}/failed`, {
-        method: "POST",
-        body: JSON.stringify({ code }),
-      });
+      console.warn("Save could not be opened (local processing).", { code });
     }
   }
 
@@ -267,10 +268,7 @@
     error = "";
 
     if (!$isDebug) {
-      fetch(`${page.url.pathname}/success`, {
-        method: "POST",
-        body: JSON.stringify({}),
-      });
+      console.info("Save opened locally; no save data was uploaded.");
     }
   }
 
@@ -305,7 +303,7 @@
       try {
         const patch: Patch<unknown> = JSON.parse(`${event.target?.result}`);
 
-        if (patch.identifier !== page.params["gameId"]) {
+        if (patch.identifier !== $page.params["gameId"]) {
           patchIsLoading = false;
           patchError = "bad identifier";
           return;
@@ -382,17 +380,17 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="gtc-tool">
+<div class="gtc-tool" class:gtc-tool-chinese={game.id === "octopath-traveler-ii"}>
   {#if $dataView.byteLength === 0}
     <Dropzone {onFileFailed} {onFileUploaded} bind:loadingPercent>
       <svelte:fragment slot="dropzone-inner" let:isDragging let:isFileLoading>
-        <img src="/img/games/{game.id}/logo.png" alt={game.metaName} />
+        <img src="{base}/img/games/{game.id}/logo.png" alt={game.metaName} />
         {#if isDragging}
-          <p>Drop the file here.</p>
+          <p>{t("Drop the file here.")}</p>
         {:else if !isFileLoading}
           <p>{$gameTemplate.validator?.text || ""}</p>
         {:else}
-          <p>Loading {loadingPercent}%</p>
+          <p>{t("Loading")} {loadingPercent}%</p>
         {/if}
         {#if $gameTemplate?.validator?.hint}
           <p class="gtc-tool-hint">{@html $gameTemplate.validator.hint}</p>
@@ -406,12 +404,12 @@
       <svelte:fragment slot="dropzone">
         <div class="gtc-tool-details">
           <p>
-            Supported platforms:
+            {t("Supported platforms:")}
             <span>{formatPlatforms(game.platforms)}</span>
           </p>
           {#if toolDetails.compatibilities}
             <p>
-              Compatible with:
+              {t("Compatible with:")}
               <span>{toolDetails.compatibilities.join(",")}</span>
             </p>
           {/if}
@@ -427,7 +425,7 @@
   {:else}
     <div class="gtc-tool-banner">
       <img
-        src="/img/games/{game.id}/logo.png"
+        src="{base}/img/games/{game.id}/logo.png"
         alt={game.metaName}
         on:click={handleLogoClick}
       />
@@ -483,11 +481,11 @@
           </div>
         {/if}
         <button type="button" class="gtc-tool-eject" on:click={handleFileEject}>
-          <EjectIcon /> Eject
+          <EjectIcon /> {t("Eject")}
         </button>
         <button type="button" class="gtc-tool-save" on:click={handleFileSave}>
           <SaveIcon />
-          {tool === "Randomizer" ? "Generate" : "Save"}
+          {tool === "Randomizer" ? "Generate" : t("Save")}
         </button>
       </div>
     </div>
@@ -501,6 +499,11 @@
 <style lang="postcss">
   .gtc-tool {
     @apply flex flex-1 flex-col;
+
+    &.gtc-tool-chinese {
+      color: #dce3ed;
+      font-family: "Roboto", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
 
     & .gtc-tool-details {
       @apply absolute right-4 top-full mt-2 text-right text-xs;

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { base } from "$app/paths";
   import { formatPlatforms } from "$lib/utils/db";
 
   import type { Game } from "$lib/types";
@@ -8,10 +9,10 @@
 
 <div class="gtc-tile">
   <div class="gtc-tile-image">
-    <img src="/img/games/{game.id}/background.png" alt={game.metaName} />
+    <img src="{base}/img/games/{game.id}/background.png" alt={game.metaName} />
     <img
       class="gtc-tile-logo"
-      src="/img/games/{game.id}/logo.png"
+      src="{base}/img/games/{game.id}/logo.png"
       alt={game.metaName}
     />
   </div>
@@ -20,7 +21,7 @@
     <p>{formatPlatforms(game.platforms)}</p>
     <div class="gtc-tile-tools">
       {#if game.tools.saveEditor}
-        <a href="/{game.id}/save-editor" class="gtc-tile-toollink">
+        <a href="{base}/{game.id}/save-editor" class="gtc-tile-toollink">
           Save Editor
           <div>
             {#each game.tools.saveEditor.regions as region}
@@ -32,7 +33,7 @@
         <span class="gtc-tile-tooldisabled">Save Editor</span>
       {/if}
       {#if game.tools.romEditor}
-        <a href="/{game.id}/rom-editor" class="gtc-tile-toollink">
+        <a href="{base}/{game.id}/rom-editor" class="gtc-tile-toollink">
           Rom Editor
           <div>
             {#each game.tools.romEditor.regions as region}
@@ -44,7 +45,7 @@
         <span class="gtc-tile-tooldisabled">Rom Editor</span>
       {/if}
       {#if game.tools.randomizer}
-        <a href="/{game.id}/randomizer" class="gtc-tile-toollink">
+        <a href="{base}/{game.id}/randomizer" class="gtc-tile-toollink">
           Randomizer
           <div>
             {#each game.tools.randomizer.regions as region}

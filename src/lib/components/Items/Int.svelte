@@ -30,6 +30,9 @@
   } from "$lib/types";
 
   export let item: ItemInt;
+  export let preserveDraft = false;
+  export let onPreview: ((id: string) => void) | undefined = undefined;
+  export let optionLabel: ((id: string, fallback: string) => string) | undefined = undefined;
 
   let previousId: string | undefined;
 
@@ -167,6 +170,7 @@
       const order = $gameJson.resourcesOrder?.[item.resource] || [];
 
       options = objToArrayKeyValue(resource, order);
+      if (optionLabel) options = options.map(option => ({ ...option, value: optionLabel!(option.key, option.value) }));
       groups = ($gameJson.resourcesGroups?.[item.resource] as ResourceGroups) || [];
       labels = $gameJson.resourcesLabels?.[item.resource] || {};
     }
@@ -179,6 +183,7 @@
   <div class="gtc-int" class:gtc-int-button={item.button}>
     {#if options.length === 0}
       <Input
+        {preserveDraft}
         {label}
         type={item.hex ? "text" : "number"}
         {min}
@@ -200,6 +205,7 @@
       />
     {:else if item.autocomplete}
       <Autocomplete
+        {onPreview}
         {label}
         {value}
         {options}
@@ -228,6 +234,7 @@
         onChange={handleInputChange}
       />
     {/if}
+    <slot {value} />
     {#if item.button}
       <button type="button" on:click={handleButtonClick}>
         {item.button.label}

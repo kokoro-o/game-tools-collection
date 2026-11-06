@@ -23,6 +23,7 @@
   export let disabled = false;
   export let test = false;
   export let onChange: (event: Event) => void;
+  export let onPreview: ((id: string) => void) | undefined = undefined;
 
   interface GroupOptions {
     name: string;
@@ -167,7 +168,7 @@
   function handleHover(event: Event): void {
     removeAllHover();
 
-    (event.target as HTMLLIElement).classList.add("gtc-autocomplete-hover");
+    (event.currentTarget as HTMLLIElement).classList.add("gtc-autocomplete-hover");
   }
 
   function handleKeyDown(event: KeyboardEvent): void {
@@ -355,13 +356,19 @@
               {#each group.options as option}
                 <li
                   class:gtc-autocomplete-highlight={option.key === `${value}`}
+                  class:gtc-autocomplete-preview={onPreview}
                   on:click={() => handleChange(option)}
                   on:mousemove={handleHover}
                 >
                   {#if $isDebug && $debugOptions.showInputValues}
                     {parseInt(option.key).toHex()}:
                   {/if}
-                  {option.value}
+                  {#if onPreview}
+                    <span class="gtc-option-name">{option.value}</span>
+                    <button class="gtc-option-details" type="button" aria-label={`查看 ${option.value} 详情`} on:click|stopPropagation={() => onPreview?.(option.key)}>详情</button>
+                  {:else}
+                    {option.value}
+                  {/if}
                 </li>
               {/each}
             </ul>
@@ -377,6 +384,12 @@
 </div>
 
 <style lang="postcss">
+  .gtc-option-details {
+    @apply my-1 ml-2 rounded bg-primary-700 px-2 py-1 text-xs text-white;
+    flex-shrink: 0;
+  }
+  .gtc-autocomplete-preview { display: flex; align-items: center; justify-content: space-between; gap: 0.25rem; }
+  .gtc-option-name { min-width: 0; overflow-wrap: anywhere; }
   .gtc-autocomplete {
     @apply relative mb-4 mr-4 w-fit rounded bg-primary-700 p-2;
 
