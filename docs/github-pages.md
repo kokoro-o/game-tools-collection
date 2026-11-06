@@ -13,13 +13,13 @@
   SvelteKit 对应配置是 `kit.paths.base`，无需再向 Vite 重复添加 `base`。
 - `.github/workflows/pages.yml` 会读取 Pages 的实际域名/路径，不需要手写用户名或申请访问令牌。
 - 向 `master` 或 `main` 推送会触发审查、安装锁定依赖、类型检查、静态构建和部署。
-- 未推送、未创建 Fork，也尚未生成真实公网网站。
+- 本文保留首次 Fork 和部署的步骤；实际发布状态以仓库 Actions / Pages 为准。
 
 准备阶段验证：按发布清单复制到不含 `.env`、本地提取报告或个人存档的独立
 目录后，`npm ci`、类型检查、静态构建及产物检查均通过。原工作目录的
 `pnpm check` 为 0 错误、0 警告。浏览器已验证仓库子路径首页、编辑器直达、
 刷新、读取上游 Steam 样本和下载副本，无浏览器错误。未运行全量回归；
-GitHub 云端工作流仍待首次 Fork、Push 并启用 Pages 后验证。
+GitHub 云端工作流结果可在仓库 Actions 中查看。
 
 ## 1. 在网页创建自己的 Fork
 
@@ -42,7 +42,7 @@ git branch --show-current
 git remote -v
 ```
 
-当前本地分支是 `master`，当前 `origin` 指向原作者。第一次执行：
+如果本地项目从原作者仓库克隆，`origin` 会指向原作者。以下远程关联命令仅在首次设置时执行：
 
 ```sh
 git remote rename origin upstream
